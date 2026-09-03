@@ -258,3 +258,4 @@ def isBaseQCStore
                        QC_E_SH,
                        QC_E_SW
                      ]>>>;
+def HasXSMTVdot : Predicate<"Subtarget->hasVendorXSMTVDot()">;

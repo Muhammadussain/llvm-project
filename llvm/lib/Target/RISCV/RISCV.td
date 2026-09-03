@@ -37,6 +37,13 @@ include "RISCVInstrInfo.td"
 include "GISel/RISCVRegisterBanks.td"
 
 //===----------------------------------------------------------------------===//
+// SpacemiT IME includes (XSMTVdot) – placed after RISCVInstrInfo.td
+//===----------------------------------------------------------------------===//
+
+include "llvm/IR/IntrinsicsRISCVXSMT.td"
+include "RISCVInstrInfoXSMT.td"
+
+//===----------------------------------------------------------------------===//
 // Instruction predicates
 //===----------------------------------------------------------------------===//
 

@@ -260,3 +260,7 @@ clang_tablegen(riscv_andes_vector_builtin_cg.inc -gen-riscv-andes-vector-builtin
 clang_tablegen(riscv_andes_vector_builtin_sema.inc -gen-riscv-andes-vector-builtin-sema
   SOURCE riscv_andes_vector.td
   TARGET ClangRISCVAndesVectorBuiltinSema)
+# SpacemiT 
+clang_tablegen(RISCVSpacemiT.inc -gen-riscv-vector-builtins
+  SOURCE riscv_spacemit_vector.td
+  TARGET ClangRISCVSpacemiTVectorBuiltins)
