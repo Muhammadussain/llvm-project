@@ -12,7 +12,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "mlir/InitAllPasses.h"
-
+#include "mlir/Dialect/RISCVIME/Transforms/Passes.h"
 #include "mlir/Conversion/Passes.h"
 #include "mlir/Dialect/AMDGPU/Transforms/Passes.h"
 #include "mlir/Dialect/Affine/Transforms/Passes.h"
@@ -104,4 +104,6 @@ void mlir::registerAllPasses() {
   gpu::registerGPUToNVVMPipeline();
   gpu::registerGPUToROCDLPipeline();
   gpu::registerGPUToXeVMPipeline();
+  riscv_ime::registerLowerContractionToRISCVIMEPass();
+
 }

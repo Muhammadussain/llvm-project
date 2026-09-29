@@ -74,6 +74,7 @@
 #include "mlir/Dialect/SCF/IR/ValueBoundsOpInterfaceImpl.h"
 #include "mlir/Dialect/SCF/TransformOps/SCFTransformOps.h"
 #include "mlir/Dialect/SCF/Transforms/BufferDeallocationOpInterfaceImpl.h"
+#include "mlir/Dialect/RISCVIME/RISCVIMEDialect.h"
 #include "mlir/Dialect/SCF/Transforms/BufferizableOpInterfaceImpl.h"
 #include "mlir/Dialect/SMT/IR/SMTDialect.h"
 #include "mlir/Dialect/SPIRV/IR/SPIRVDialect.h"
@@ -144,6 +145,7 @@ void mlir::registerAllDialects(DialectRegistry &registry) {
                   pdl::PDLDialect,
                   pdl_interp::PDLInterpDialect,
                   ptr::PtrDialect,
+                  riscv_ime::RISCVIMEDialect,
                   quant::QuantDialect,
                   ROCDL::ROCDLDialect,
                   scf::SCFDialect,
