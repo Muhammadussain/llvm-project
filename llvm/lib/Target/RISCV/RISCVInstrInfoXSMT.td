@@ -5,90 +5,102 @@
 // SPDX-License-Identifier: Apache-2.0 WITH LLVM-exception
 //
 //===----------------------------------------------------------------------===//
-//
-// This file describes the vendor extensions defined by SpacemiT.
-// IME (Intelligent Matrix Extension) - XSMTVdot
-// Based on: https://github.com/spacemit-com/riscv-ime-extension-spec
-//
+// XSMTVDot: smt.vmadot / vmadotu / vmadotsu / vmadotus  (LMUL=1 only)
 //===----------------------------------------------------------------------===//
 
-// Ensure instructions are placed in the RISCV namespace.
-let Namespace = "RISCV" in {
-
-//===----------------------------------------------------------------------===//
-// Instruction Class for real instructions
-//===----------------------------------------------------------------------===//
+// ═══════════════════════════════════════════════════════════
+// PART 1: ENCODING FORMAT
+// ═══════════════════════════════════════════════════════════
 
 class XSMTVDot<bits<3> funct3, string opcodestr>
-    : Instruction {
-  bits<32> Inst;
-  bits<5> vd;
-  bits<5> vs1;
+    : RVInst<(outs VR:$vd), (ins VR:$vs1, VR:$vs2, VMaskOp:$vm),
+             opcodestr, "$vd, $vs1, $vs2$vm", [], InstFormatR> {
   bits<5> vs2;
+  bits<5> vs1;
+  bits<5> vd;
+  bit vm;
 
-  let OutOperandList = (outs VR:$vd);
-  let InOperandList = (ins VR:$vs1, VR:$vs2);
-  let AsmString = opcodestr # " $vd, $vs1, $vs2";
-  let Constraints = "$vd = $vs2";
-
-  // Encoding as per SpacemiT IME spec v1.0:
-  // [31:26] funct7 = 111000
-  // [25] vm = 0 (unmasked)
-  // [24:20] vs2
-  // [19:15] vs1
-  // [14:12] funct3
-  // [11:7]  vd
-  // [6:0]   opcode = 0x2b (Custom-1)
   let Inst{31-26} = 0b111000;
-  let Inst{25}    = 0b0;
+  let Inst{25} = vm;
   let Inst{24-20} = vs2;
   let Inst{19-15} = vs1;
   let Inst{14-12} = funct3;
-  let Inst{11-7}  = vd;
-  let Inst{6-0}   = 0b0101011;
-
-  // DecoderNamespace for a separate decoder table.
-  let DecoderNamespace = "XSMT";
-
-  let Size = 4;
+  let Inst{11-7} = vd;
+  let Inst{6-0} = 0b0101011;
+  let hasSideEffects = 0;
   let mayLoad = 0;
   let mayStore = 0;
-  let hasSideEffects = 0;
+  let VMConstraint = true;
+  let UseNamedOperandTable = true;
 }
 
-//===----------------------------------------------------------------------===//
-// Actual Instructions
-//===----------------------------------------------------------------------===//
+// ═══════════════════════════════════════════════════════════
+// PART 2: REAL INSTRUCTIONS
+// ═══════════════════════════════════════════════════════════
 
-def SMT_VMADOT   : XSMTVDot<0b001, "smt.vmadot">;
-def SMT_VMADOTU  : XSMTVDot<0b000, "smt.vmadotu">;
-def SMT_VMADOTSU : XSMTVDot<0b010, "smt.vmadotsu">;
-def SMT_VMADOTUS : XSMTVDot<0b011, "smt.vmadotus">;
-
-//===----------------------------------------------------------------------===//
-// Dummy pseudo-instruction to force `vmask` into OpName.
-// Fields are defined to satisfy TableGen, but `isPseudo` makes it ignored for encoding.
-//===----------------------------------------------------------------------===//
-
-let isPseudo = 1, hasSideEffects = 0, mayLoad = 0, mayStore = 0 in
-def DUMMY_MASK_INST : Instruction {
-  bits<5> vd;
-  bits<5> vs1;
-  bits<5> vs2;
-  bits<5> vmask;   // dummy field – not used
-
-  let OutOperandList = (outs VR:$vd);
-  let InOperandList = (ins VR:$vs1, VR:$vs2, GPR:$vmask);
-  let AsmString = "dummy $vd, $vs1, $vs2, $vmask";
-  let Size = 0;
+let DecoderNamespace = "XSMT" in {
+let Predicates = [HasVendorXSMTVDot], Uses = [VL, VTYPE] in {
+  def SMT_VMADOT_VV   : XSMTVDot<0b001, "smt.vmadot">;
+  def SMT_VMADOTU_VV  : XSMTVDot<0b000, "smt.vmadotu">;
+  def SMT_VMADOTSU_VV : XSMTVDot<0b010, "smt.vmadotsu">;
+  def SMT_VMADOTUS_VV : XSMTVDot<0b011, "smt.vmadotus">;
+}
 }
 
-//===----------------------------------------------------------------------===//
-// DAG Patterns (temporarily disabled – to be added later)
-//===----------------------------------------------------------------------===//
-// def : Pat<(int_riscv_xsmt_vmadot   VR:$vd, VR:$vs1, VR:$vs2), (SMT_VMADOT   $vd, $vs1, $vs2)>;
-// def : Pat<(int_riscv_xsmt_vmadotu  VR:$vd, VR:$vs1, VR:$vs2), (SMT_VMADOTU  $vd, $vs1, $vs2)>;
-// def : Pat<(int_riscv_xsmt_vmadotsu VR:$vd, VR:$vs1, VR:$vs2), (SMT_VMADOTSU $vd, $vs1, $vs2)>;
-// def : Pat<(int_riscv_xsmt_vmadotus VR:$vd, VR:$vs1, VR:$vs2), (SMT_VMADOTUS $vd, $vs1, $vs2)>;
+// ═══════════════════════════════════════════════════════════
+// PART 3: PSEUDO INSTRUCTIONS (expanded with defm)
+// ═══════════════════════════════════════════════════════════
 
-} // end Namespace = "RISCV"
+let Predicates = [HasVendorXSMTVDot] in {
+  defm PseudoSMT_VMADOT : VPseudoBinaryV_VV<V_M1>,
+                          SchedBinary<"WriteVIALUV", "ReadVIALUV",
+                                      "ReadVIALUV", V_M1.MX,
+                                      forcePassthruRead=true>;
+  defm PseudoSMT_VMADOTU : VPseudoBinaryV_VV<V_M1>,
+                           SchedBinary<"WriteVIALUV", "ReadVIALUV",
+                                       "ReadVIALUV", V_M1.MX,
+                                       forcePassthruRead=true>;
+  defm PseudoSMT_VMADOTSU : VPseudoBinaryV_VV<V_M1>,
+                            SchedBinary<"WriteVIALUV", "ReadVIALUV",
+                                        "ReadVIALUV", V_M1.MX,
+                                        forcePassthruRead=true>;
+  defm PseudoSMT_VMADOTUS : VPseudoBinaryV_VV<V_M1>,
+                            SchedBinary<"WriteVIALUV", "ReadVIALUV",
+                                        "ReadVIALUV", V_M1.MX,
+                                        forcePassthruRead=true>;
+}
+
+// ═══════════════════════════════════════════════════════════
+// PART 4: PATTERN RULES (expanded from multiclass + foreach)
+// ═══════════════════════════════════════════════════════════
+
+let Predicates = [HasVendorXSMTVDot] in {
+
+  // vmadot: int8m1 × int8m1 → int32m1
+  let Predicates = GetVTypePredicates<VI32M1>.Predicates in
+  defm : VPatTernaryWithPolicy<"int_riscv_vmadot", "PseudoSMT_VMADOT", "VV",
+                               VI32M1.Vector, VI8M1.Vector, VI8M1.Vector,
+                               VI32M1.Mask, VI32M1.Log2SEW, VI8M1.LMul,
+                               VI32M1.RegClass, VI8M1.RegClass, VI8M1.RegClass>;
+
+  // vmadotu: uint8m1 × uint8m1 → int32m1
+  let Predicates = GetVTypePredicates<VI32M1>.Predicates in
+  defm : VPatTernaryWithPolicy<"int_riscv_vmadotu", "PseudoSMT_VMADOTU", "VV",
+                               VI32M1.Vector, VI8M1.Vector, VI8M1.Vector,
+                               VI32M1.Mask, VI32M1.Log2SEW, VI8M1.LMul,
+                               VI32M1.RegClass, VI8M1.RegClass, VI8M1.RegClass>;
+
+  // vmadotsu: uint8m1 × int8m1 → int32m1
+  let Predicates = GetVTypePredicates<VI32M1>.Predicates in
+  defm : VPatTernaryWithPolicy<"int_riscv_vmadotsu", "PseudoSMT_VMADOTSU", "VV",
+                               VI32M1.Vector, VI8M1.Vector, VI8M1.Vector,
+                               VI32M1.Mask, VI32M1.Log2SEW, VI8M1.LMul,
+                               VI32M1.RegClass, VI8M1.RegClass, VI8M1.RegClass>;
+
+  // vmadotus: int8m1 × uint8m1 → int32m1
+  let Predicates = GetVTypePredicates<VI32M1>.Predicates in
+  defm : VPatTernaryWithPolicy<"int_riscv_vmadotus", "PseudoSMT_VMADOTUS", "VV",
+                               VI32M1.Vector, VI8M1.Vector, VI8M1.Vector,
+                               VI32M1.Mask, VI32M1.Log2SEW, VI8M1.LMul,
+                               VI32M1.RegClass, VI8M1.RegClass, VI8M1.RegClass>;
+}

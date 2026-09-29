@@ -142,6 +142,7 @@ set(riscv_files
   riscv_nds.h
   riscv_packed_simd.h
   sifive_vector.h
+  spacemit_vector.h
   )
 
 set(spirv_files

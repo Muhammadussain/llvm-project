@@ -77,6 +77,17 @@ static const PrototypeDescriptor RVAndesVectorSignatureTable[] = {
 #undef DECL_SIGNATURE_TABLE
 };
 
+static const PrototypeDescriptor RVSpacemitVectorSignatureTable[] = {
+#define DECL_SIGNATURE_TABLE
+#include "clang/Basic/riscv_spacemit_vector_builtin_sema.inc"
+#undef DECL_SIGNATURE_TABLE
+};
+
+static const RVVIntrinsicRecord RVSpacemitVectorIntrinsicRecords[] = {
+#define DECL_INTRINSIC_RECORDS
+#include "clang/Basic/riscv_spacemit_vector_builtin_sema.inc"
+#undef DECL_INTRINSIC_RECORDS
+};
 static const RVVIntrinsicRecord RVVIntrinsicRecords[] = {
 #define DECL_INTRINSIC_RECORDS
 #include "clang/Basic/riscv_vector_builtin_sema.inc"
@@ -105,7 +116,9 @@ ProtoSeq2ArrayRef(IntrinsicKind K, uint16_t Index, uint8_t Length) {
     return ArrayRef(&RVSiFiveVectorSignatureTable[Index], Length);
   case IntrinsicKind::ANDES_VECTOR:
     return ArrayRef(&RVAndesVectorSignatureTable[Index], Length);
-  }
+	case IntrinsicKind::SPACEMIT_VECTOR:
+    return ArrayRef(&RVSpacemitVectorSignatureTable[Index], Length);
+ }
   llvm_unreachable("Unhandled IntrinsicKind");
 }
 
@@ -216,7 +229,7 @@ private:
   bool ConstructedRISCVVBuiltins;
   bool ConstructedRISCVSiFiveVectorBuiltins;
   bool ConstructedRISCVAndesVectorBuiltins;
-
+  bool ConstructedRISCVSpacemitVectorBuiltins;
   // List of all RVV intrinsic.
   std::vector<RVVIntrinsicDef> IntrinsicList;
   // Mapping function name to index of IntrinsicList.
@@ -242,6 +255,7 @@ public:
     ConstructedRISCVVBuiltins = false;
     ConstructedRISCVSiFiveVectorBuiltins = false;
     ConstructedRISCVAndesVectorBuiltins = false;
+    ConstructedRISCVSpacemitVectorBuiltins = false;
   }
 
   // Initialize IntrinsicList
@@ -385,8 +399,14 @@ void RISCVIntrinsicManagerImpl::InitIntrinsicList() {
     ConstructRVVIntrinsics(RVAndesVectorIntrinsicRecords,
                            IntrinsicKind::ANDES_VECTOR);
   }
-}
+  if (S.RISCV().DeclareSpacemiTVectorBuiltins &&
+      !ConstructedRISCVSpacemitVectorBuiltins) {
+    ConstructedRISCVSpacemitVectorBuiltins = true;
+    ConstructRVVIntrinsics(RVSpacemitVectorIntrinsicRecords,
+                           IntrinsicKind::SPACEMIT_VECTOR);
+  }
 
+}
 // Compute name and signatures for intrinsic with practical types.
 void RISCVIntrinsicManagerImpl::InitRVVIntrinsic(
     const RVVIntrinsicRecord &Record, StringRef SuffixStr,

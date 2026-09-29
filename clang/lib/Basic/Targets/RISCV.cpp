@@ -270,15 +270,18 @@ static constexpr int NumRVVBuiltins =
     RISCVVector::FirstSiFiveBuiltin - Builtin::FirstTSBuiltin;
 static constexpr int NumRVVSiFiveBuiltins =
     RISCVVector::FirstAndesBuiltin - RISCVVector::FirstSiFiveBuiltin;
+
 static constexpr int NumRVVAndesBuiltins =
-    RISCVVector::FirstTSBuiltin - RISCVVector::FirstAndesBuiltin;
+    RISCVVector::FirstSpacemitBuiltin - RISCVVector::FirstAndesBuiltin;
+static constexpr int NumRVVSpacemitBuiltins =
+    RISCVVector::FirstTSBuiltin - RISCVVector::FirstSpacemitBuiltin;
 static constexpr int NumRISCVBuiltins =
     RISCV::LastTSBuiltin - RISCVVector::FirstTSBuiltin;
 static constexpr int NumBuiltins =
     RISCV::LastTSBuiltin - Builtin::FirstTSBuiltin;
 static_assert(NumBuiltins == (NumRVVBuiltins + NumRVVSiFiveBuiltins +
-                              NumRVVAndesBuiltins + NumRISCVBuiltins));
-
+                              NumRVVAndesBuiltins + NumRVVSpacemitBuiltins +
+                              NumRISCVBuiltins));	
 namespace RVV {
 #define GET_RISCVV_BUILTIN_STR_TABLE
 #include "clang/Basic/riscv_vector_builtins.inc"
@@ -317,6 +320,19 @@ static constexpr std::array<Builtin::Info, NumRVVAndesBuiltins> BuiltinInfos =
 #undef GET_RISCVV_BUILTIN_INFOS
 };
 } // namespace RVVAndes
+namespace RVVSpacemit {
+#define GET_RISCVV_BUILTIN_STR_TABLE
+#include "clang/Basic/riscv_spacemit_vector_builtins.inc"
+#undef GET_RISCVV_BUILTIN_STR_TABLE
+
+static constexpr std::array<Builtin::Info, NumRVVSpacemitBuiltins> BuiltinInfos =
+    {
+#define GET_RISCVV_BUILTIN_INFOS
+#include "clang/Basic/riscv_spacemit_vector_builtins.inc"
+#undef GET_RISCVV_BUILTIN_INFOS
+};
+} // namespace RVVSpacemit
+
 
 #define GET_BUILTIN_STR_TABLE
 #include "clang/Basic/BuiltinsRISCV.inc"
@@ -335,6 +351,7 @@ RISCVTargetInfo::getTargetBuiltins() const {
       {&RVV::BuiltinStrings, RVV::BuiltinInfos, "__builtin_rvv_"},
       {&RVVSiFive::BuiltinStrings, RVVSiFive::BuiltinInfos, "__builtin_rvv_"},
       {&RVVAndes::BuiltinStrings, RVVAndes::BuiltinInfos, "__builtin_rvv_"},
+      {&RVVSpacemit::BuiltinStrings, RVVSpacemit::BuiltinInfos, "__builtin_rvv_"},
       {&BuiltinStrings, BuiltinInfos},
   };
 }

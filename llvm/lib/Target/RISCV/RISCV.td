@@ -40,8 +40,7 @@ include "GISel/RISCVRegisterBanks.td"
 // SpacemiT IME includes (XSMTVdot) – placed after RISCVInstrInfo.td
 //===----------------------------------------------------------------------===//
 
-include "llvm/IR/IntrinsicsRISCVXSMT.td"
-include "RISCVInstrInfoXSMT.td"
+//include "RISCVInstrInfoXSMT.td"
 
 //===----------------------------------------------------------------------===//
 // Instruction predicates
@@ -108,6 +107,10 @@ def RISCVAsmWriter : AsmWriter {
 }
 
 defm : RemapAllTargetPseudoPointerOperands<GPR>;
+
+// SpacemiT IME definitions
+
+
 
 def RISCV : Target {
   let InstructionSet = RISCVInstrInfo;

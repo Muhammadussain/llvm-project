@@ -258,4 +258,8 @@ def isBaseQCStore
                        QC_E_SH,
                        QC_E_SW
                      ]>>>;
-def HasXSMTVdot : Predicate<"Subtarget->hasVendorXSMTVDot()">;
+//	def HasXSMTVdot : Predicate<"Subtarget->hasVendorXSMTVDot()">;
+//def HasVendorXSMTVDot : Predicate<"Subtarget->hasVendorXSMTVDot()">,
+//                        AssemblerPredicate<(all_of FeatureVendorXSMTVDot),
+ //                       "'XSMTVDot' (SpacemiT Vector Dot Product Extension)">;
+//

@@ -960,7 +960,7 @@ bool Sema::LookupBuiltin(LookupResult &R) {
       }
 
       if (RISCV().DeclareRVVBuiltins || RISCV().DeclareSiFiveVectorBuiltins ||
-          RISCV().DeclareAndesVectorBuiltins) {
+          RISCV().DeclareAndesVectorBuiltins || RISCV().DeclareSpacemiTVectorBuiltins) {
         if (!RISCV().IntrinsicManager)
           RISCV().IntrinsicManager = CreateRISCVIntrinsicManager(*this);
 

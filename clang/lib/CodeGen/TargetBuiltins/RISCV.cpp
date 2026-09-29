@@ -1817,8 +1817,9 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
 
     // Andes Vector builtins are handled from here.
 #include "clang/Basic/riscv_andes_vector_builtin_cg.inc"
+// SpacemiT Vector builtins are handled from here.
+#include "clang/Basic/riscv_spacemit_vector_builtin_cg.inc"
   }
-
   assert(ID != Intrinsic::not_intrinsic);
 
   llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);

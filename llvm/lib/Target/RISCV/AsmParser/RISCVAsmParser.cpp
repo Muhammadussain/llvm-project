@@ -4361,7 +4361,7 @@ bool RISCVAsmParser::validateInstruction(MCInst &Inst,
                           " the mask register");
     }
   }
-
+/*
   if (MCID.TSFlags & RISCVII::SMTConstraintMask) {
     // smt.vmadot with sp and hp: the vmask operand (only use V0 or V1) must not
     // overlap with any of vd, vs1, or vs2.
@@ -4391,7 +4391,7 @@ bool RISCVAsmParser::validateInstruction(MCInst &Inst,
       }
     }
   }
-
+*/
   return false;
 }
 

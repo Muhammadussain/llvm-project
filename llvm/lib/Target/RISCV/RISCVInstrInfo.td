@@ -2474,7 +2474,8 @@ include "RISCVInstrInfoXqccmp.td"
 include "RISCVInstrInfoXqccmt.td"
 include "RISCVInstrInfoXMips.td"
 include "RISCVInstrInfoXAndes.td"
-include "RISCVInstrInfoXSpacemiT.td"
+include "RISCVInstrInfoXSMT.td"
+//include "RISCVInstrInfoXSpacemiT.td"
 include "RISCVInstrInfoXAIF.td"
 
 //===----------------------------------------------------------------------===//

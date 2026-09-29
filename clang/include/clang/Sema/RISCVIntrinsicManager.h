@@ -24,8 +24,13 @@ class Preprocessor;
 namespace sema {
 class RISCVIntrinsicManager {
 public:
-  enum class IntrinsicKind : uint8_t { RVV, SIFIVE_VECTOR, ANDES_VECTOR };
 
+  enum class IntrinsicKind : uint8_t {
+    RVV,
+    SIFIVE_VECTOR,
+    ANDES_VECTOR,
+    SPACEMIT_VECTOR
+  };
   virtual ~RISCVIntrinsicManager() = default;
 
   virtual void InitIntrinsicList() = 0;

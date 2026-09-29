@@ -261,6 +261,14 @@ clang_tablegen(riscv_andes_vector_builtin_sema.inc -gen-riscv-andes-vector-built
   SOURCE riscv_andes_vector.td
   TARGET ClangRISCVAndesVectorBuiltinSema)
 # SpacemiT 
-clang_tablegen(RISCVSpacemiT.inc -gen-riscv-vector-builtins
+
+# SpacemiT IME Vector Dot Product Extension
+clang_tablegen(riscv_spacemit_vector_builtins.inc -gen-riscv-spacemit-vector-builtins
   SOURCE riscv_spacemit_vector.td
-  TARGET ClangRISCVSpacemiTVectorBuiltins)
+  TARGET ClangRISCVSpacemitVectorBuiltins)
+clang_tablegen(riscv_spacemit_vector_builtin_cg.inc -gen-riscv-spacemit-vector-builtin-codegen
+  SOURCE riscv_spacemit_vector.td
+  TARGET ClangRISCVSpacemitVectorBuiltinCG)
+clang_tablegen(riscv_spacemit_vector_builtin_sema.inc -gen-riscv-spacemit-vector-builtin-sema
+  SOURCE riscv_spacemit_vector.td
+  TARGET ClangRISCVSpacemitVectorBuiltinSema)

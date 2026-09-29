@@ -119,6 +119,9 @@ enum ActionType {
   GenRISCVAndesVectorBuiltins,
   GenRISCVAndesVectorBuiltinCG,
   GenRISCVAndesVectorBuiltinSema,
+  GenRISCVSpacemitVectorBuiltins,
+  GenRISCVSpacemitVectorBuiltinCG,
+  GenRISCVSpacemitVectorBuiltinSema,
   GenHLSLAliasIntrinsics,
   GenHLSLInlineIntrinsics,
   GenAttrDocs,
@@ -353,7 +356,16 @@ cl::opt<ActionType> Action(
         clEnumValN(GenRISCVAndesVectorBuiltinSema,
                    "gen-riscv-andes-vector-builtin-sema",
                    "Generate riscv_andes_vector_builtin_sema.inc for clang"),
-        clEnumValN(GenHLSLAliasIntrinsics, "gen-hlsl-alias-intrinsics",
+        clEnumValN(GenRISCVSpacemitVectorBuiltins,
+                 "gen-riscv-spacemit-vector-builtins",
+                 "Generate riscv_spacemit_vector_builtins.inc for clang"),
+        clEnumValN(GenRISCVSpacemitVectorBuiltinCG,
+                 "gen-riscv-spacemit-vector-builtin-codegen",
+                 "Generate riscv_spacemit_vector_builtin_cg.inc for clang"),
+        clEnumValN(GenRISCVSpacemitVectorBuiltinSema,
+                 "gen-riscv-spacemit-vector-builtin-sema",
+                 "Generate riscv_spacemit_vector_builtin_sema.inc for clang"),
+	 clEnumValN(GenHLSLAliasIntrinsics, "gen-hlsl-alias-intrinsics",
                    "Generate HLSL alias intrinsic overloads for "
                    "hlsl_alias_intrinsics.h"),
         clEnumValN(GenHLSLInlineIntrinsics, "gen-hlsl-inline-intrinsics",
@@ -699,7 +711,17 @@ bool ClangTableGenMain(raw_ostream &OS, const RecordKeeper &Records) {
   case GenClangBuiltinTraits:
     EmitClangBuiltinTraits(Records, OS);
     break;
+  case GenRISCVSpacemitVectorBuiltins:
+    EmitRVVBuiltins(Records, OS);
+    break;
+  case GenRISCVSpacemitVectorBuiltinCG:
+    EmitRVVBuiltinCG(Records, OS);
+    break;
+  case GenRISCVSpacemitVectorBuiltinSema:
+    EmitRVVBuiltinSema(Records, OS);
+    break;
   }
+
 
   return false;
 }
