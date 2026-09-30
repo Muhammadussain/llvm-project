@@ -12,6 +12,8 @@
 
 #include "mlir/Dialect/DLTI/DLTI.h"
 #include "mlir/Dialect/Func/IR/FuncOps.h"
+#include "mlir/Dialect/RISCVIME/RISCVIMEDialect.h"          // Added for RISCVIME dialect
+#include "mlir/Dialect/Vector/IR/VectorOps.h" 
 #include "mlir/Target/LLVMIR/Dialect/All.h"
 #include "mlir/Target/LLVMIR/Export.h"
 #include "mlir/Tools/mlir-translate/Translation.h"
@@ -35,7 +37,10 @@ void registerToLLVMIRTranslation() {
         return success();
       },
       [](DialectRegistry &registry) {
-        registry.insert<DLTIDialect, func::FuncDialect>();
+        registry.insert<DLTIDialect, 
+        func::FuncDialect,
+        vector::VectorDialect,          
+        riscv_ime::RISCVIMEDialect>();
         registerAllToLLVMIRTranslations(registry);
       });
 }

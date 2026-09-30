@@ -13,7 +13,7 @@
 
 #ifndef MLIR_TARGET_LLVMIR_DIALECT_ALL_H
 #define MLIR_TARGET_LLVMIR_DIALECT_ALL_H
-
+#include "mlir/IR/DialectRegistry.h"                                    
 #include "mlir/Target/LLVMIR/Dialect/ArmNeon/ArmNeonToLLVMIRTranslation.h"
 #include "mlir/Target/LLVMIR/Dialect/ArmSME/ArmSMEToLLVMIRTranslation.h"
 #include "mlir/Target/LLVMIR/Dialect/ArmSVE/ArmSVEToLLVMIRTranslation.h"
@@ -29,12 +29,12 @@
 #include "mlir/Target/LLVMIR/Dialect/SPIRV/SPIRVToLLVMIRTranslation.h"
 #include "mlir/Target/LLVMIR/Dialect/VCIX/VCIXToLLVMIRTranslation.h"
 #include "mlir/Target/LLVMIR/Dialect/XeVM/XeVMToLLVMIRTranslation.h"
-
-namespace mlir {
-class DialectRegistry;
+#include "mlir/Target/LLVMIR/Dialect/RISCVIME/RISCVIMEToLLVMIRTranslation.h"
 
 /// Registers all dialects that can be translated to LLVM IR and the
 /// corresponding translation interfaces.
+
+namespace mlir {  
 static inline void registerAllToLLVMIRTranslations(DialectRegistry &registry) {
   registerArmNeonDialectTranslation(registry);
   registerArmSMEDialectTranslation(registry);
@@ -45,6 +45,7 @@ static inline void registerAllToLLVMIRTranslations(DialectRegistry &registry) {
   registerNVVMDialectTranslation(registry);
   registerOpenMPDialectTranslation(registry);
   registerPtrDialectTranslation(registry);
+  riscv_ime::registerRISCVIMEDialectTranslation(registry);   
   registerROCDLDialectTranslation(registry);
   registerSPIRVDialectTranslation(registry);
   registerVCIXDialectTranslation(registry);

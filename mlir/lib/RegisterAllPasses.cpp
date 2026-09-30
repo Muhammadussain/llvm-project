@@ -105,5 +105,6 @@ void mlir::registerAllPasses() {
   gpu::registerGPUToROCDLPipeline();
   gpu::registerGPUToXeVMPipeline();
   riscv_ime::registerLowerContractionToRISCVIMEPass();
+  riscv_ime::registerLegalizeForLLVMExportPass();     
 
 }
