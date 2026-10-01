@@ -59,11 +59,11 @@ def RISCVIME_VmadotOp : Op<RISCVIME_Dialect, "vmadot",
      AllTypesMatch<["acc", "res"]>]> {
   let summary = "SpacemiT IME signed i8 x i8 -> i32 matrix MAC";
   let arguments = (ins
-      RISCVIMEVectorOfLength<8, I32>:$acc,    // 4x2 = 8 i32 (m1)
+      RISCVIMEVectorOfLength<16, I32>:$acc,    // 4x2 = 8 i32 (m1)
       RISCVIMEVectorOfLength<32, I8>:$vs1,    // 4x8 = 32 i8 (m1)
       RISCVIMEVectorOfLength<32, I8>:$vs2);   // 2x8 = 16 i8
   let results = (outs
-      RISCVIMEVectorOfLength<8, I32>:$res);
+      RISCVIMEVectorOfLength<16, I32>:$res);
 
   let assemblyFormat =
     "$acc `,` $vs1 `,` $vs2 attr-dict `:` type($vs1) `,` type($vs2) `to` type($res)";
