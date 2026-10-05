@@ -1,44 +1,37 @@
-# The LLVM Compiler Infrastructure
+# LLVM/MLIR — SpacemiT IME (XSMT) Support
 
-[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/llvm/llvm-project/badge)](https://securityscorecards.dev/viewer/?uri=github.com/llvm/llvm-project)
-[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/8273/badge)](https://www.bestpractices.dev/projects/8273)
-[![libc++](https://github.com/llvm/llvm-project/actions/workflows/libcxx-pr-conformance-tests.yaml/badge.svg?branch=main&event=schedule)](https://github.com/llvm/llvm-project/actions/workflows/libcxx-pr-conformance-tests.yaml?query=event%3Aschedule)
+## Branches
 
-Welcome to the LLVM project!
+| Branch | Description |
+|---|---|
+| `phase1-xsmt-patches` | LLVM backend: smt.vmadotus |
+| `phase3-riscvime-dialect` | MLIR riscv_ime dialect + translation |
 
-This repository contains the source code for LLVM, a toolkit for the
-construction of highly optimized compilers, optimizers, and run-time
-environments.
+## Build Instructions
 
-The LLVM project has multiple components. The core of the project is
-itself called "LLVM". This contains all of the tools, libraries, and header
-files needed to process intermediate representations and convert them into
-object files. Tools include an assembler, disassembler, bitcode analyzer, and
-bitcode optimizer.
+### Clone
+git clone https://github.com/Muhammadussain/llvm-project.git
+cd llvm-project
+git checkout phase3-riscvime-dialect
 
-C-like languages use the [Clang](https://clang.llvm.org/) frontend. This
-component compiles C, C++, Objective-C, and Objective-C++ code into LLVM bitcode
--- and from there into object files, using LLVM.
+### Build
+export LLVM_SRC=$(pwd)
+export LLVM_BUILD=$HOME/llvm-xsmt-build
 
-Other components include:
-the [libc++ C++ standard library](https://libcxx.llvm.org),
-the [LLD linker](https://lld.llvm.org), and more.
+rm -rf $LLVM_BUILD
+mkdir -p $LLVM_BUILD
+cd $LLVM_BUILD
 
-## Getting the Source Code and Building LLVM
+cmake -G Ninja \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_C_COMPILER=/usr/bin/clang \
+  -DCMAKE_CXX_COMPILER=/usr/bin/clang++ \
+  -DLLVM_ENABLE_PROJECTS="clang;lld;mlir" \
+  -DLLVM_TARGETS_TO_BUILD="RISCV;X86" \
+  -DLLVM_ENABLE_ASSERTIONS=ON \
+  -DLLVM_INCLUDE_TESTS=OFF \
+  -DCMAKE_INSTALL_PREFIX=$HOME/llvm-xsmt-install \
+  $LLVM_SRC/llvm
 
-Consult the
-[Getting Started with LLVM](https://llvm.org/docs/GettingStarted.html#getting-the-source-code-and-building-llvm)
-page for information on building and running LLVM.
-
-For information on how to contribute to the LLVM project, please take a look at
-the [Contributing to LLVM](https://llvm.org/docs/Contributing.html) guide.
-
-## Getting in touch
-
-Join the [LLVM Discourse forums](https://discourse.llvm.org/), [Discord
-chat](https://discord.gg/xS7Z362),
-[LLVM Office Hours](https://llvm.org/docs/GettingInvolved.html#office-hours) or
-[Regular sync-ups](https://llvm.org/docs/GettingInvolved.html#online-sync-ups).
-
-The LLVM project has adopted a [code of conduct](https://llvm.org/docs/CodeOfConduct.html) for
-participants to all modes of communication within the project.
+cmake --build . --target clang llc opt FileCheck count not mlir-opt mlir-translate llvm-objdump -j$(nproc)
+cmake --install .
