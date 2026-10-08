@@ -63,23 +63,23 @@ static LogicalResult convertVmadotIntr(riscv_ime::VmadotIntrOp op,
   auto *vs1FixedTy = llvm::cast<llvm::FixedVectorType>(vs1->getType());
   auto *vs2FixedTy = llvm::cast<llvm::FixedVectorType>(vs2->getType());
 
-  auto *accScalTy = llvm::ScalableVectorType::get(
-      accFixedTy->getElementType(), accFixedTy->getNumElements() / 4);
-  auto *vs1ScalTy = llvm::ScalableVectorType::get(
-      vs1FixedTy->getElementType(), vs1FixedTy->getNumElements() / 4);
-  auto *vs2ScalTy = llvm::ScalableVectorType::get(
-      vs2FixedTy->getElementType(), vs2FixedTy->getNumElements() / 4);
+    auto *accScalTy = llvm::ScalableVectorType::get(
+        accFixedTy->getElementType(), accFixedTy->getNumElements() / 4);
+    auto *vs1ScalTy = llvm::ScalableVectorType::get(
+        vs1FixedTy->getElementType(), vs1FixedTy->getNumElements() / 4);
+    auto *vs2ScalTy = llvm::ScalableVectorType::get(
+        vs2FixedTy->getElementType(), vs2FixedTy->getNumElements() / 4);
 
-  llvm::Value *accS = fixedToScalable(builder, module, acc, accScalTy);
-  llvm::Value *vs1S = fixedToScalable(builder, module, vs1, vs1ScalTy);
-  llvm::Value *vs2S = fixedToScalable(builder, module, vs2, vs2ScalTy);
+    llvm::Value *accS = fixedToScalable(builder, module, acc, accScalTy);
+    llvm::Value *vs1S = fixedToScalable(builder, module, vs1, vs1ScalTy);
+    llvm::Value *vs2S = fixedToScalable(builder, module, vs2, vs2ScalTy);
 
   llvm::Type *i64 = llvm::Type::getInt64Ty(ctx);
   llvm::Value *vl = llvm::ConstantInt::get(i64, 32);
   llvm::Value *policy = llvm::ConstantInt::get(i64, 2);
 
   llvm::Function *intrinsic = llvm::Intrinsic::getOrInsertDeclaration(
-      module, llvm::Intrinsic::riscv_vmadotus,
+      module, llvm::Intrinsic::riscv_vmadot,
       {accScalTy, vs1ScalTy, vs2ScalTy, i64});
 
   llvm::Value *result = builder.CreateCall(
@@ -108,6 +108,7 @@ public:
     return failure();
   }
 };
+hhuuuhuhhuuuu
 
 } // namespace
 
